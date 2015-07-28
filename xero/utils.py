@@ -17,6 +17,7 @@ OBJECT_NAMES = {
     "BankTransfers": "BankTransfer",
     "BrandingThemes": "BrandingTheme",
     "Contacts": "Contact",
+    "ContactGroups": "ContactGroup",
     "CreditNotes": "CreditNote",
     "Currencies": "Currency",
     "Employees": "Employee",
