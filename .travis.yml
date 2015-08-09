@@ -9,4 +9,8 @@ install:
   - python setup.py install
   - pip install coveralls
 # command to run tests, e.g. python setup.py test
-script: python setup.py test
+script:
+- coverage run --source=pyxero setup.py test
+after_success:
+- coverage report -m
+- coveralls --verbose
