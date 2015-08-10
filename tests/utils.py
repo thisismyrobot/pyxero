@@ -17,35 +17,28 @@ class UtilsTest(unittest.TestCase):
         """ Tests the json hook used in Manager._parse_api_response, and the
             call it makes to parse_date.
         """
-        example_input = {
-            'data': {
-                'Status': 'OK',
-            },
-        }
-
-        self.assertEqual(
-            xero.utils.json_load_object_hook(example_input),
-            example_input
-        )
-
         # The hook parses dates
         example_input = {
-            'data': {
-                'Status': 'OK',
-            },
             'date': '/Date(1426849200000+1300)/',
         }
 
-        excepted_output = {
-            'data': {
-                'Status': 'OK',
-            },
-            'date': datetime.datetime(2015, 3, 21, 0, 0),
+        self.assertEqual(
+            xero.utils.json_load_object_hook(example_input),
+            {
+                'date': datetime.datetime(2015, 3, 21, 0, 0),
+            }
+        )
+
+        # In both format styles
+        example_input = {
+            'date': '2015-04-29T00:00:00',
         }
 
         self.assertEqual(
             xero.utils.json_load_object_hook(example_input),
-            excepted_output
+            {
+                'date': datetime.date(2015, 4, 29)
+            }
         )
 
     def test_parse_date(self):
