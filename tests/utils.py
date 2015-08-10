@@ -47,3 +47,24 @@ class UtilsTest(unittest.TestCase):
             xero.utils.json_load_object_hook(example_input),
             excepted_output
         )
+
+    def test_parse_date(self):
+        """ Tests of the parse_date input formats.
+        """
+        # 07/05/2015 00:00:00 +12 (06/05/2015 12:00:00 GMT/UTC)
+        self.assertEqual(
+            xero.utils.parse_date('/Date(1430913600000+1200)/'),
+            datetime.datetime(2015, 5, 7, 0, 0)
+        )
+
+        # 16/09/2008 10:28:51.5 +12 (15/09/2008 22:25:51.5 GMT/UTC)
+        self.assertEqual(
+            xero.utils.parse_date('/Date(1221517731500+1200)/'),
+            datetime.datetime(2008, 9, 16, 10, 28, 51, 500000)
+        )
+
+        # 10/08/2015 10:55:33 GMT/UTC
+        self.assertEqual(
+            xero.utils.parse_date('/Date(1439204133355)/'),
+            datetime.datetime(2015, 8, 10, 10, 55, 33, 355000)
+        )
