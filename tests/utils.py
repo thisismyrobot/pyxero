@@ -78,5 +78,5 @@ class UtilsTest(unittest.TestCase):
         # 29/04/2015 10:21:03
         self.assertEqual(
             xero.utils.parse_date('2015-04-29T10:21:03'),
-            datetime.datetime(2015, 4, 29, 10, 21, 03)
+            datetime.datetime(2015, 4, 29, 10, 21, 3)
         )
