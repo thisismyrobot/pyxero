@@ -155,14 +155,16 @@ class Manager(object):
             from xero import __version__ as VERSION
             timeout = kwargs.pop('timeout', None)
 
-            uri, params, method, body, headers, singleobject = func(*args, **kwargs)
+            uri, params, method, body, headers, singleobject = func(
+                *args, **kwargs
+            )
             cert = getattr(self.credentials, 'client_cert', None)
 
             if headers is None:
                 headers = {}
 
-            # Use the JSON API by default, but remember we might request a PDF (application/pdf)
-            # so don't force the Accept header.
+            # Use the JSON API by default, but remember we might request a PDF
+            # (application/pdf) so don't force the Accept header.
             if 'Accept' not in headers:
                 headers['Accept'] = 'application/json'
 
@@ -175,7 +177,8 @@ class Manager(object):
             )
 
             if response.status_code == 200:
-                # If we haven't got XML or JSON, assume we're being returned a binary file
+                # If we haven't got XML or JSON, assume we're being returned a
+                # binary file
                 if not response.headers['content-type'].startswith('application/json'):
                     return response.content
 
@@ -221,13 +224,14 @@ class Manager(object):
         return uri, uri_params, 'get', None, headers, True
 
     def _get_attachments(self, id):
-        """Retrieve a list of attachments associated with this Xero object."""
+        """ Retrieve a list of attachments associated with this Xero object.
+        """
         uri = '/'.join([self.base_url, self.name, id, 'Attachments']) + '/'
         return uri, {}, 'get', None, None, False
 
     def _get_attachment_data(self, id, filename):
-        """
-        Retrieve the contents of a specific attachment (identified by filename).
+        """ Retrieve the contents of a specific attachment (identified by
+            filename).
         """
         uri = '/'.join([self.base_url, self.name, id, 'Attachments', filename])
         return uri, {}, 'get', None, None, False
@@ -254,17 +258,21 @@ class Manager(object):
         return self.save_or_put(data, method='post')
 
     def _put(self, data, summarize_errors=True):
-        return self.save_or_put(data, method='put', summarize_errors=summarize_errors)
+        return self.save_or_put(
+            data, method='put', summarize_errors=summarize_errors
+        )
 
     def _put_attachment_data(self, id, filename, data, content_type, include_online=False):
-        """Upload an attachment to the Xero object."""
+        """ Upload an attachment to the Xero object.
+        """
         uri = '/'.join([self.base_url, self.name, id, 'Attachments', filename])
         params = {'IncludeOnline': 'true'} if include_online else {}
         headers = {'Content-Type': content_type, 'Content-Length': len(data)}
         return uri, params, 'put', data, headers, False
 
     def put_attachment(self, id, filename, file, content_type, include_online=False):
-        """Upload an attachment to the Xero object (from file object)."""
+        """ Upload an attachment to the Xero object (from file object).
+        """
         self.put_attachment_data(id, filename, file.read(), content_type,
                                  include_online=include_online)
 
@@ -293,7 +301,9 @@ class Manager(object):
                 if key in self.BOOLEAN_FIELDS:
                     return 'true' if value else 'false'
                 elif key in self.DATE_FIELDS:
-                    return 'DateTime(%s,%s,%s)' % (value.year, value.month, value.day)
+                    return 'DateTime(%s,%s,%s)' % (
+                        value.year, value.month, value.day
+                    )
                 elif key in self.DATETIME_FIELDS:
                     return value.isoformat()
                 else:
@@ -333,9 +343,10 @@ class Manager(object):
                 raw = kwargs.pop('raw')
                 filter_params.append(raw)
 
-            # Treat any remaining arguments as filter predicates
-            # Xero will break if you search without a check for null in the first position:
-            # http://developer.xero.com/documentation/getting-started/http-requests-and-responses/#title3
+            # Treat any remaining arguments as filter predicates Xero will
+            # break if you search without a check for null in the first
+            # position: http://developer.xero.com/documentation/getting-
+            # started/http-requests-and-responses/#title3
             sortedkwargs = sorted(
                 six.iteritems(kwargs),
                 key=lambda item: -1 if 'isnull' in item[0] else 0

@@ -4,18 +4,22 @@ import json
 
 
 class XeroException(Exception):
+    """ Xero exceptions.
+    """
     def __init__(self, response, msg=None):
         self.response = response
         super(XeroException, self).__init__(msg)
 
 
 class XeroNotVerified(Exception):
-    # Credentials haven't been verified
+    """ Credentials haven't been verified.
+    """
     pass
 
 
 class XeroBadRequest(XeroException):
-    # HTTP 400: Bad Request
+    """ HTTP 400: Bad Request.
+    """
     def __init__(self, response):
         if response.headers['content-type'].startswith('application/json'):
             data = json.loads(response.text)
@@ -33,7 +37,9 @@ class XeroBadRequest(XeroException):
                 payload['oauth_problem'][0],
             ]
             self.problem = self.errors[0]
-            super(XeroBadRequest, self).__init__(response, payload['oauth_problem_advice'][0])
+            super(XeroBadRequest, self).__init__(
+                response, payload['oauth_problem_advice'][0]
+            )
 
         else:
             # Extract the messages from the text.
@@ -50,37 +56,45 @@ class XeroBadRequest(XeroException):
 
 
 class XeroUnauthorized(XeroException):
-    # HTTP 401: Unauthorized
+    """ HTTP 401: Unauthorized.
+    """
     def __init__(self, response):
         payload = parse_qs(response.text)
         self.problem = payload['oauth_problem'][0]
-        super(XeroUnauthorized, self).__init__(response, payload['oauth_problem_advice'][0])
+        super(XeroUnauthorized, self).__init__(
+            response, payload['oauth_problem_advice'][0]
+        )
 
 
 class XeroForbidden(XeroException):
-    # HTTP 403: Forbidden
+    """ HTTP 403: Forbidden.
+    """
     def __init__(self, response):
         super(XeroForbidden, self).__init__(response, response.text)
 
 
 class XeroNotFound(XeroException):
-    # HTTP 404: Not Found
+    """ HTTP 404: Not Found.
+    """
     def __init__(self, response):
         super(XeroNotFound, self).__init__(response, response.text)
 
 class XeroUnsupportedMediaType(XeroException):
-    # HTTP 415: UnsupportedMediaType
+    """ HTTP 415: UnsupportedMediaType.
+    """
     def __init__(self, response):
         super(XeroUnsupportedMediaType, self).__init__(response, response.text)
 
 class XeroInternalError(XeroException):
-    # HTTP 500: Internal Error
+    """ HTTP 500: Internal Error.
+    """
     def __init__(self, response):
         super(XeroInternalError, self).__init__(response, response.text)
 
 
 class XeroNotImplemented(XeroException):
-    # HTTP 501
+    """ HTTP 501.
+    """
     def __init__(self, response):
         # Extract the useful error message from the text.
         # parseString takes byte content, not unicode.
@@ -92,18 +106,23 @@ class XeroNotImplemented(XeroException):
 
 
 class XeroRateLimitExceeded(XeroException):
-    # HTTP 503 - Rate limit exceeded
+    """ HTTP 503 - Rate limit exceeded.
+    """
     def __init__(self, response, payload):
         self.problem = payload['oauth_problem'][0]
-        super(XeroRateLimitExceeded, self).__init__(response, payload['oauth_problem_advice'][0])
+        super(XeroRateLimitExceeded, self).__init__(
+            response, payload['oauth_problem_advice'][0]
+        )
 
 
 class XeroNotAvailable(XeroException):
-    # HTTP 503 - Not available
+    """ HTTP 503 - Not available.
+    """
     def __init__(self, response):
         super(XeroNotAvailable, self).__init__(response, response.text)
 
 
 class XeroExceptionUnknown(XeroException):
-    # Any other exception.
+    """ Any other exception.
+    """
     pass

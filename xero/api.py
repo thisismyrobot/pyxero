@@ -4,8 +4,8 @@ from .filesmanager import FilesManager
 
 
 class Xero(object):
-    """An ORM-like interface to the Xero API"""
-
+    """ An ORM-like interface to the Xero API.
+    """
     OBJECT_LIST = (
         "Attachments",
         "Accounts",
@@ -37,17 +37,20 @@ class Xero(object):
     def __init__(self, credentials, unit_price_4dps=False):
         # Iterate through the list of objects we support, for
         # each of them create an attribute on our self that is
-        # the lowercase name of the object and attach it to an
+        # the lower-case name of the object and attach it to an
         # instance of a Manager object to operate on it
         for name in self.OBJECT_LIST:
-            setattr(self, name.lower(), Manager(name, credentials, unit_price_4dps))
+            setattr(
+                self, name.lower(),
+                Manager(name, credentials, unit_price_4dps)
+            )
 
         setattr(self, "filesAPI", Files(credentials))
 
 
 class Files(object):
-    """An ORM-like interface to the Xero Files API"""
-
+    """ An ORM-like interface to the Xero Files API.
+    """
     OBJECT_LIST = (
         "Associations",
         "Files",
@@ -58,7 +61,7 @@ class Files(object):
     def __init__(self, credentials):
         # Iterate through the list of objects we support, for
         # each of them create an attribute on our self that is
-        # the lowercase name of the object and attach it to an
+        # the lower-case name of the object and attach it to an
         # instance of a Manager object to operate on it
         for name in self.OBJECT_LIST:
             setattr(self, name.lower(), FilesManager(name, credentials))

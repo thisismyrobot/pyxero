@@ -90,11 +90,11 @@ class PublicCredentials(object):
                  callback_uri=None, verified=False,
                  oauth_token=None, oauth_token_secret=None,
                  oauth_expires_at=None, oauth_authorization_expires_at=None):
-        """Construct the auth instance.
+        """ Construct the auth instance.
 
-        Must provide the consumer key and secret.
-        A callback URL may be provided as an option. If provided, the
-        Xero verification process will redirect to that URL when
+            Must provide the consumer key and secret.
+            A callback URL may be provided as an option. If provided, the
+            Xero verification process will redirect to that URL when
 
         """
         self.consumer_key = consumer_key
@@ -114,10 +114,14 @@ class PublicCredentials(object):
         self.client_cert = None
         self.oauth_session_handle = None
 
+        self.oauth_token = None
+        self.oauth_token_secret = None
+
         self._init_credentials(oauth_token, oauth_token_secret)
 
     def _init_credentials(self, oauth_token, oauth_token_secret):
-        "Depending on the state passed in, get self._oauth up and running"
+        """ Depending on the state passed in, get self._oauth up and running.
+        """
         if oauth_token and oauth_token_secret:
             if self.verified:
                 # If provided, this is a fully verified set of
@@ -147,7 +151,8 @@ class PublicCredentials(object):
             self._process_oauth_response(response)
 
     def _init_oauth(self, oauth_token, oauth_token_secret):
-        "Store and initialize a verified set of OAuth credentials"
+        """ Store and initialize a verified set of OAuth credentials.
+        """
         self.oauth_token = oauth_token
         self.oauth_token_secret = oauth_token_secret
 
@@ -161,7 +166,8 @@ class PublicCredentials(object):
         )
 
     def _process_oauth_response(self, response):
-        "Extracts the fields from an oauth response"
+        """ Extracts the fields from an oauth response.
+        """
         if response.status_code == 200:
             credentials = parse_qs(response.text)
 
@@ -194,6 +200,8 @@ class PublicCredentials(object):
             self._handle_error_response(response)
 
     def _handle_error_response(self, response):
+        """ Raise exceptions for error codes.
+        """
         if response.status_code == 400:
             raise XeroBadRequest(response)
 
@@ -227,8 +235,8 @@ class PublicCredentials(object):
 
     @property
     def state(self):
-        """Obtain the useful state of this credentials object so that
-        we can reconstruct it independently.
+        """ Obtain the useful state of this credentials object so that we can
+            reconstruct it independently.
         """
         return dict(
             (attr, getattr(self, attr))
@@ -242,8 +250,8 @@ class PublicCredentials(object):
         )
 
     def verify(self, verifier):
-        "Verify an OAuth token"
-
+        """ Verify an OAuth token
+        """
         # Construct the credentials for the verification request
         oauth = OAuth1(
             self.consumer_key,
@@ -263,7 +271,8 @@ class PublicCredentials(object):
 
     @property
     def url(self):
-        "Returns the URL that can be visited to obtain a verifier code"
+        """ Returns the URL that can be visited to obtain a verifier code.
+        """
         # The authorize url is always api.xero.com
         url = XERO_BASE_URL + AUTHORIZE_URL + '?' + \
               urlencode({'oauth_token': self.oauth_token})
@@ -277,6 +286,8 @@ class PublicCredentials(object):
         return self._oauth
 
     def expired(self, now=None):
+        """ Check whether expired.
+        """
         if now is None:
             now = datetime.datetime.now()
 

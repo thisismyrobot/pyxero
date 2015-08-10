@@ -1,17 +1,17 @@
 from __future__ import unicode_literals
 
+import os
 import requests
-import json
-import six
 
-from datetime import datetime
 from six.moves.urllib.parse import parse_qs
 
-from .constants import XERO_API_URL, XERO_FILES_URL
+from .constants import XERO_FILES_URL
 from .exceptions import *
 
 
 class FilesManager(object):
+    """ Xero files manager.
+    """
     DECORATED_METHODS = (
         'get',
         'all',
@@ -26,6 +26,7 @@ class FilesManager(object):
         'delete_association',
         'get_content',
         )
+
     def __init__(self, name, credentials):
         self.credentials = credentials
         self.name = name
@@ -52,16 +53,21 @@ class FilesManager(object):
 
     def _get_data(self, func):
         """ This is the decorator for our DECORATED_METHODS.
-        Each of the decorated methods must return:
-            uri, params, method, body, headers, singleobject
+
+            Each of the decorated methods must return:
+                uri, params, method, body, headers, singleobject, files
         """
         def wrapper(*args, **kwargs):
-            uri, params, method, body, headers, singleobject, files = func(*args, **kwargs)
+            uri, params, method, body, headers, singleobject, files = func(
+                *args, **kwargs
+            )
 
             cert = getattr(self.credentials, 'client_cert', None)
             response = getattr(requests, method)(
-                    uri, data=body, headers=headers, auth=self.credentials.oauth,
-                    params=params, cert=cert, files = files)
+                    uri, data=body, headers=headers,
+                    auth=self.credentials.oauth, params=params, cert=cert,
+                    files = files
+            )
 
             if response.status_code == 200 or response.status_code == 201:
                 if response.headers['content-type'].startswith('application/json'):
@@ -124,11 +130,15 @@ class FilesManager(object):
         return uri, {}, 'get', None, None, False, None
 
     def _get_association(self, fileId, objectId):
-        uri = '/'.join([self.base_url, self.name, fileId, 'Associations', objectId])
+        uri = '/'.join(
+            [self.base_url, self.name, fileId, 'Associations', objectId]
+        )
         return uri, {}, 'get', None, None, False, None
 
     def _delete_association(self, fileId, objectId):
-        uri = '/'.join([self.base_url, self.name, fileId, 'Associations', objectId])
+        uri = '/'.join(
+            [self.base_url, self.name, fileId, 'Associations', objectId]
+        )
         return uri, {}, 'delete', None, None, False, None
 
 
@@ -148,7 +158,9 @@ class FilesManager(object):
         return self.create_or_save(data, method='post')
 
     def _save(self, data, summarize_errors=True):
-        return self.create_or_save(data, method='put', summarize_errors=summarize_errors)
+        return self.create_or_save(
+            data, method='put', summarize_errors=summarize_errors
+        )
 
     def _delete(self, id):
         uri = '/'.join([self.base_url, self.name, id])
