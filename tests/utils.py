@@ -73,3 +73,9 @@ class UtilsTest(unittest.TestCase):
             xero.utils.parse_date('2015-04-29T10:21:03'),
             datetime.datetime(2015, 4, 29, 10, 21, 3)
         )
+
+        # Not a date
+        self.assertEqual(
+            xero.utils.parse_date('not a date'),
+            None
+        )
