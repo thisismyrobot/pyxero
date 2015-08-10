@@ -68,3 +68,15 @@ class UtilsTest(unittest.TestCase):
             xero.utils.parse_date('/Date(1439204133355)/'),
             datetime.datetime(2015, 8, 10, 10, 55, 33, 355000)
         )
+
+        # 29/04/2015 00:00:00
+        self.assertEqual(
+            xero.utils.parse_date('2015-04-29T00:00:00'),
+            datetime.date(2015, 4, 29)
+        )
+
+        # 29/04/2015 10:21:03
+        self.assertEqual(
+            xero.utils.parse_date('2015-04-29T10:21:03'),
+            datetime.datetime(2015, 4, 29, 10, 21, 03)
+        )
